@@ -1,23 +1,25 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Anchor, ArrowRight, Bell, Briefcase, LogOut, Menu, Moon, Search, Shield, Sun, User } from 'lucide-react';
+import { Anchor, ArrowRight, Bell, Briefcase, LogOut, Menu, Moon, Search, Shield, Sun, User, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
-import { useAppDispatch } from '../../redux/hooks';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { logout } from '../../redux/slices/authSlice';
-import { handleSelectModule } from '../../redux/actions/uiActions';
+// import { handleSelectModule } from '../../redux/actions/uiActions';
 import { useTheme } from '../../context/useTheme';
-import { toggleSidebar } from '../../redux/slices/uiSlice';
+import { handleSelectModule, setCmdPaletteOpen, toggleSidebar } from '../../redux/slices/uiSlice';
 import { notifications } from '../../utils/constants';
 
 const Header: React.FC = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const { isDarkMode, toggleTheme } = useTheme();
+    const { sidebarCollapsed } = useAppSelector(state => state.ui);
+    const { username, role } = useAppSelector(state => state.auth);
     const profileRef = useRef<HTMLDivElement>(null);
     const notifRef = useRef<HTMLButtonElement>(null);
-    const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isNotifOpen, setIsNotifOpen] = useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
 
     const handleLogout = () => {
         // Clear token from localStorage
@@ -68,7 +70,7 @@ const Header: React.FC = () => {
                 </button>
 
                 {/* Logo - Hide if sidebar is open on desktop to prevent duplication */}
-                <div className={`flex items-center gap-3 transition-opacity duration-300 ${!collapsed ? 'opacity-0 md:opacity-100' : 'opacity-100'}`}>
+                <div className={`flex items-center gap-3 transition-opacity duration-300 ${!sidebarCollapsed ? 'opacity-0 md:opacity-100' : 'opacity-100'}`}>
                     <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
                         <Anchor className="text-white w-5 h-5" />
                     </div>
@@ -81,7 +83,7 @@ const Header: React.FC = () => {
 
                 {/* Search Icon / Command Palette Trigger */}
                 <button
-                    onClick={onOpenCommandPalette}
+                    onClick={() => dispatch(setCmdPaletteOpen(true))}
                     className="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors rounded-full hover:bg-slate-100 dark:hover:bg-white/5"
                     title="Search / Command Palette (Cmd+K)"
                 >
@@ -206,7 +208,7 @@ const Header: React.FC = () => {
 
                                 <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/10 space-y-2">
                                     <button
-                                        onClick={() => dispatch(handleSelectModule('personnel', 'personnel-records'))}
+                                        onClick={() => dispatch(handleSelectModule({moduleId: 'personnel', workflow: 'personnel-records' }))}
                                         className="w-full py-2 flex items-center justify-start px-4 gap-3 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 rounded-xl transition-colors"
                                     >
                                         <User size={16} /> My Profile

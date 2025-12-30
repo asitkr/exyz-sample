@@ -53,7 +53,7 @@ const Launchpad: React.FC = () => {
     const handleCardMenu = (moduleId: string) => {
         localStorage.setItem('module_id', moduleId);
 
-        navigate(`/dashboard/${moduleId}`);
+        navigate(`/${moduleId}`);
     }
 
     return (

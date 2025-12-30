@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 export interface NavContext {
   workflow: string;
   subMenu?: string;
+  childMenu?: string;
 }
 
 interface UiState {
@@ -10,6 +11,7 @@ interface UiState {
   navContext: NavContext | null;
   sidebarCollapsed: boolean;
   mobileMenuOpen: boolean;
+  isCmdPaletteOpen: boolean;
 }
 
 const initialState: UiState = {
@@ -17,6 +19,7 @@ const initialState: UiState = {
   navContext: null,
   sidebarCollapsed: true,
   mobileMenuOpen: false,
+  isCmdPaletteOpen: false,
 };
 
 const uiSlice = createSlice({
@@ -41,7 +44,7 @@ const uiSlice = createSlice({
     toggleSidebar(state) {
       state.sidebarCollapsed = !state.sidebarCollapsed;
     },
-     setSidebarCollapsed(state, action: PayloadAction<boolean>) {
+    setSidebarCollapsed(state, action: PayloadAction<boolean>) {
       state.sidebarCollapsed = action.payload;
     },
 
@@ -57,8 +60,31 @@ const uiSlice = createSlice({
       state.sidebarCollapsed = true;
       state.mobileMenuOpen = false;
     },
+    setCmdPaletteOpen(state, action: PayloadAction<boolean>) {
+      state.isCmdPaletteOpen = action.payload;
+    },
+    handleSelectModule(
+      state,
+      action: PayloadAction<{ moduleId: string; workflow: string; subMenu?: string }>
+    ) {
+      state.activeModuleId = action.payload.moduleId;
+      state.navContext = {
+        workflow: action.payload.workflow,
+        subMenu: action.payload.subMenu,
+      };
+    },
   },
 });
 
-export const { setActiveModule, resetNavigation, toggleSidebar, setSidebarCollapsed, toggleMobileMenu, closeMobileMenu, resetUI } = uiSlice.actions;
+export const {
+  setActiveModule,
+  resetNavigation,
+  toggleSidebar,
+  setSidebarCollapsed,
+  toggleMobileMenu,
+  closeMobileMenu,
+  resetUI,
+  setCmdPaletteOpen,
+  handleSelectModule
+} = uiSlice.actions;
 export default uiSlice.reducer;

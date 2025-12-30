@@ -1,4 +1,4 @@
-import React, { lazy } from 'react';
+import React, { lazy, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useForm } from 'react-hook-form';
 import { ArrowRight, Lock, Shield } from 'lucide-react';
@@ -15,10 +15,59 @@ const Input = lazy(() => import('../components/common/Input'));
 const Button = lazy(() => import('../components/common/Button'));
 
 const AUTH_TOKEN_KEY = 'auth_token';
+const AUTH_USER_KEY = 'horizon_username';
 
 const SignIn: React.FC = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
+    const [isAuthChecking, setIsAuthChecking] = useState(true);
+
+    const processUserLogin = (username: string) => {
+        const foundUser = INITIAL_USERS.find(u => u.username.toLowerCase() === username.toLowerCase());
+
+        let role: UserRole = 'NORMAL_USER';
+        let userId = '999';
+
+        if (foundUser) {
+            role = foundUser.role;
+            userId = foundUser.id;
+        } else {
+            const u = username.toLowerCase();
+            if (u.includes('super')) role = 'SUPER_ADMIN';
+            else if (u.includes('proc')) role = 'PROCUREMENT_ADMIN';
+            else if (u.includes('unit')) role = 'UNIT_ADMIN';
+        }
+
+        const token = localStorage.getItem(AUTH_TOKEN_KEY) || '';
+
+        dispatch(
+            setCredentials({
+                username,
+                userId,
+                role,
+                token,
+                status: 'Active',
+                serviceYears: 0,
+            })
+        );
+    };
+
+    useEffect(() => {
+        const token = localStorage.getItem(AUTH_TOKEN_KEY);
+        const storedUsername = localStorage.getItem(AUTH_USER_KEY);
+
+        if (token && storedUsername) {
+            try {
+                const decoded = atob(token);
+                if (decoded.includes(storedUsername)) {
+                    processUserLogin(storedUsername);
+                }
+            } catch (e) {
+                console.error('Error decoding token:', e);
+            }
+        }
+        setIsAuthChecking(false);
+    }, []);
 
     const resolveUser = (username: string) => {
         const foundUser = INITIAL_USERS.find(

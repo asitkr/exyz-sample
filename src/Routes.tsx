@@ -36,7 +36,7 @@ export const Routes = createBrowserRouter([
         ],
     },
     {
-        path: '/dashboard/:moduleId',
+        path: '/:moduleId',
         element: (<configRoutes.dashboardlayout />),
         children: [
             { index: true, element: (<configRoutes.dashboard />) }
