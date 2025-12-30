@@ -7,3 +7,7 @@ export interface SignInLayoutProps {
 export interface LaunchpadLayoutProps {
     children: React.ReactNode;
 }
+
+export interface SidebarLayoutProps {
+    children: React.ReactNode;
+}

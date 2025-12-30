@@ -16,9 +16,9 @@ interface UiState {
 
 const initialState: UiState = {
   activeModuleId: null,
-  navContext: null,
+  navContext: { workflow: 'home', subMenu: '', childMenu: '' },
   sidebarCollapsed: true,
-  mobileMenuOpen: false,
+  mobileMenuOpen: true,
   isCmdPaletteOpen: false,
 };
 
@@ -34,12 +34,14 @@ const uiSlice = createSlice({
       }>
     ) {
       state.activeModuleId = action.payload.moduleId;
-      state.navContext = action.payload.context ?? null;
+      state.navContext = action.payload.context ?? { workflow: 'home', subMenu: '', childMenu: '' };
     },
-
+    resetActiveModuleId(state) {
+      state.activeModuleId = null;
+    },
     resetNavigation(state) {
       state.activeModuleId = null;
-      state.navContext = null;
+      state.navContext = { workflow: 'home', subMenu: '', childMenu: '' };
     },
     toggleSidebar(state) {
       state.sidebarCollapsed = !state.sidebarCollapsed;
@@ -59,6 +61,7 @@ const uiSlice = createSlice({
     resetUI(state) {
       state.sidebarCollapsed = true;
       state.mobileMenuOpen = false;
+      state.navContext = { workflow: 'home', subMenu: '', childMenu: '' };
     },
     setCmdPaletteOpen(state, action: PayloadAction<boolean>) {
       state.isCmdPaletteOpen = action.payload;
@@ -73,6 +76,16 @@ const uiSlice = createSlice({
         subMenu: action.payload.subMenu,
       };
     },
+    handleNavigate(
+      state,
+      action: PayloadAction<{ workflow?: string; subMenu?: string; childMenu?: string }>
+    ) {
+      state.navContext = {
+        workflow: action.payload.workflow ?? state.navContext?.workflow ?? 'home',
+        subMenu: action.payload.subMenu ?? state.navContext?.subMenu ?? '',
+        childMenu: action.payload.childMenu ?? state.navContext?.childMenu ?? '',
+      };
+    }
   },
 });
 
@@ -85,6 +98,8 @@ export const {
   closeMobileMenu,
   resetUI,
   setCmdPaletteOpen,
-  handleSelectModule
+  handleSelectModule,
+  resetActiveModuleId,
+  handleNavigate
 } = uiSlice.actions;
 export default uiSlice.reducer;

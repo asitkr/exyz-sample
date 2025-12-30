@@ -1,4 +1,4 @@
-import { BadgeVariant } from "../../utils/types";
+import { BadgeVariant, MenuItem } from "../../utils/types";
 
 export interface BadgeProps {
   children: React.ReactNode;
@@ -50,4 +50,8 @@ export interface CommandOption {
   icon: React.ElementType;
   shortcut?: string[];
   action: () => void;
+}
+
+export interface SidebarProps {
+  activeContext: { menuId?: string, subId?: string, childId?: string };
 }

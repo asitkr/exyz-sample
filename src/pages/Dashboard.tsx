@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { lazy } from 'react';
 
-const Dashboard = () => {
-  return (
-    <div>Dashboard</div>
-  )
+const DashboardLayout = lazy(() => import('../components/layout/DashboardLayout'));
+
+const Dashboard: React.FC = () => {
+    return (
+        <DashboardLayout>
+            Dashboard
+        </DashboardLayout>
+    )
 }
 
 export default Dashboard;

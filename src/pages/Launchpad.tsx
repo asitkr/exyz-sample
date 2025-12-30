@@ -1,9 +1,10 @@
-import React, { lazy, useState } from 'react';
+import React, { lazy, useEffect, useState } from 'react';
 import { useTheme } from '../context/useTheme';
 import { Activity, Anchor, Briefcase, Calendar, Clock, FileText, MapPin, Pin, Shield, User } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { handleSelectModule } from '../redux/actions/uiActions';
 import { useNavigate } from 'react-router-dom';
+import { setSidebarCollapsed } from '../redux/slices/uiSlice';
 
 const LaunchpadLayout = lazy(() => import('../components/layout/LaunchpadLayout'));
 
@@ -20,9 +21,25 @@ const Launchpad: React.FC = () => {
         const saved = localStorage.getItem(STORAGE_KEY);
         return saved ? JSON.parse(saved) : [];
     });
+    const [storedUser, setStoredUser] = useState<any>(null);
 
     const user = allUsers.find(u => u?.id === userId) || { username: '', rank: '', email: '', serviceNumber: '', designation: '', unit: '', dateOfJoining: '', dateOfSeniority: '', dateOfRetirement: '' };
 
+    useEffect(() => {
+        if(user) {
+            localStorage.setItem("auth", JSON.stringify(user));
+        }
+    }, []);
+
+    useEffect(() => {
+        console.log("User Data on Launchpad:", localStorage.getItem("auth"));
+        const storedData = localStorage.getItem("auth");
+        if (storedData) {
+            const parsedData = JSON.parse(storedData);
+            setStoredUser(parsedData);
+        }
+    }, [])
+    
     const getGreeting = () => {
         const hour = new Date().getHours();
         if (hour < 12) return 'Good Morning';
@@ -63,7 +80,7 @@ const Launchpad: React.FC = () => {
 
                 <div className="my-10 animate-fade-in-up">
                     <h2 className={`text-4xl font-bold mb-3 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-                        {getGreeting()}, {user.rank} {user.username.split(' ').pop()}.
+                        {getGreeting()}, {storedUser?.rank} {storedUser?.username.split(' ').pop()}.
                     </h2>
                     <p className={`text-lg ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
                         Your operational dashboard is ready.
@@ -76,31 +93,31 @@ const Launchpad: React.FC = () => {
                         <div>
                             <label className="text-xs font-bold text-slate-500 uppercase mb-2 block tracking-wider">Full Name</label>
                             <div className={`text-base font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'} flex items-center gap-2`}>
-                                <User size={16} className="text-blue-500" /> {user.username}
+                                <User size={16} className="text-blue-500" /> {storedUser?.username}
                             </div>
                         </div>
                         <div>
                             <label className="text-xs font-bold text-slate-500 uppercase mb-2 block tracking-wider">Service No.</label>
                             <div className={`text-base font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'} flex items-center gap-2`}>
-                                <FileText size={16} className="text-blue-500" /> {user.serviceNumber}
+                                <FileText size={16} className="text-blue-500" /> {storedUser?.serviceNumber}
                             </div>
                         </div>
                         <div>
                             <label className="text-xs font-bold text-slate-500 uppercase mb-2 block tracking-wider">Rank</label>
                             <div className={`text-base font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'} flex items-center gap-2`}>
-                                <Shield size={16} className="text-blue-500" /> {user.rank}
+                                <Shield size={16} className="text-blue-500" /> {storedUser?.rank}
                             </div>
                         </div>
                         <div>
                             <label className="text-xs font-bold text-slate-500 uppercase mb-2 block tracking-wider">Designation</label>
                             <div className={`text-base font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'} flex items-center gap-2`}>
-                                <Briefcase size={16} className="text-blue-500" /> {user.designation}
+                                <Briefcase size={16} className="text-blue-500" /> {storedUser?.designation}
                             </div>
                         </div>
                         <div>
                             <label className="text-xs font-bold text-slate-500 uppercase mb-2 block tracking-wider">Unit</label>
                             <div className={`text-base font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'} flex items-center gap-2`}>
-                                <MapPin size={16} className="text-blue-500" /> {user.unit}
+                                <MapPin size={16} className="text-blue-500" /> {storedUser?.unit}
                             </div>
                         </div>
 
@@ -108,19 +125,19 @@ const Launchpad: React.FC = () => {
                         <div>
                             <label className="text-xs font-bold text-slate-500 uppercase mb-2 block tracking-wider">Date of Joining</label>
                             <div className={`text-base font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'} flex items-center gap-2`}>
-                                <Calendar size={16} className="text-emerald-500" /> {user.dateOfJoining || 'N/A'}
+                                <Calendar size={16} className="text-emerald-500" /> {storedUser?.dateOfJoining || 'N/A'}
                             </div>
                         </div>
                         <div>
                             <label className="text-xs font-bold text-slate-500 uppercase mb-2 block tracking-wider">Date of Seniority</label>
                             <div className={`text-base font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'} flex items-center gap-2`}>
-                                <Activity size={16} className="text-amber-500" /> {user.dateOfSeniority || 'N/A'}
+                                <Activity size={16} className="text-amber-500" /> {storedUser?.dateOfSeniority || 'N/A'}
                             </div>
                         </div>
                         <div>
                             <label className="text-xs font-bold text-slate-500 uppercase mb-2 block tracking-wider">Date of Retirement</label>
                             <div className={`text-base font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'} flex items-center gap-2`}>
-                                <Clock size={16} className="text-red-500" /> {user.dateOfRetirement || 'N/A'}
+                                <Clock size={16} className="text-red-500" /> {storedUser?.dateOfRetirement || 'N/A'}
                             </div>
                         </div>
 
@@ -151,7 +168,7 @@ const Launchpad: React.FC = () => {
                         return (
                             <div
                                 key={module.id}
-                                onClick={() => {dispatch(handleSelectModule(module.id)); handleCardMenu(module.id); }}
+                                onClick={() => {dispatch(handleSelectModule(module.id)); handleCardMenu(module.id); dispatch(setSidebarCollapsed(true)) }}
                                 className={`group relative border rounded-[2rem] transition-all duration-500 cursor-pointer overflow-hidden flex flex-col animate-fade-in-up ${spanClass}
                                 ${isDarkMode
                                         ? 'bg-slate-800 hover:bg-slate-700 border-slate-700 hover:border-blue-500/50 hover:shadow-2xl hover:shadow-blue-900/20'
