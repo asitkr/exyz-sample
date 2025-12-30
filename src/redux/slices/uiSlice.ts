@@ -8,11 +8,15 @@ export interface NavContext {
 interface UiState {
   activeModuleId: string | null;
   navContext: NavContext | null;
+  sidebarCollapsed: boolean;
+  mobileMenuOpen: boolean;
 }
 
 const initialState: UiState = {
   activeModuleId: null,
   navContext: null,
+  sidebarCollapsed: true,
+  mobileMenuOpen: false,
 };
 
 const uiSlice = createSlice({
@@ -34,8 +38,27 @@ const uiSlice = createSlice({
       state.activeModuleId = null;
       state.navContext = null;
     },
+    toggleSidebar(state) {
+      state.sidebarCollapsed = !state.sidebarCollapsed;
+    },
+     setSidebarCollapsed(state, action: PayloadAction<boolean>) {
+      state.sidebarCollapsed = action.payload;
+    },
+
+    toggleMobileMenu(state) {
+      state.mobileMenuOpen = !state.mobileMenuOpen;
+    },
+
+    closeMobileMenu(state) {
+      state.mobileMenuOpen = false;
+    },
+
+    resetUI(state) {
+      state.sidebarCollapsed = true;
+      state.mobileMenuOpen = false;
+    },
   },
 });
 
-export const { setActiveModule, resetNavigation } = uiSlice.actions;
+export const { setActiveModule, resetNavigation, toggleSidebar, setSidebarCollapsed, toggleMobileMenu, closeMobileMenu, resetUI } = uiSlice.actions;
 export default uiSlice.reducer;

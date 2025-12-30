@@ -7,6 +7,8 @@ import { useAppDispatch } from '../../redux/hooks';
 import { logout } from '../../redux/slices/authSlice';
 import { handleSelectModule } from '../../redux/actions/uiActions';
 import { useTheme } from '../../context/useTheme';
+import { toggleSidebar } from '../../redux/slices/uiSlice';
+import { notifications } from '../../utils/constants';
 
 const Header: React.FC = () => {
     const navigate = useNavigate();
@@ -59,7 +61,7 @@ const Header: React.FC = () => {
             {/* Left Side: Logo & Toggle */}
             <div className="flex items-center gap-6">
                 <button
-                    onClick={onMenuClick}
+                    onClick={() => dispatch(toggleSidebar())}
                     className="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5"
                 >
                     <Menu className="w-6 h-6" />
